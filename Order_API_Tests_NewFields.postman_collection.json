@@ -1,0 +1,70 @@
+{
+  "info": {
+    "name": "GreenConnect - Order API Tests (With New Fields)",
+    "description": "Test cases for Order endpoints with new fields: deliveryAddressId, tax, rankPoints, deliveryAddressSnapshot",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Order Management - Create & Retrieve",
+      "item": [
+        {
+          "name": "1. Create Cash Order (With New Fields)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/orders/create-cash",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "orders", "create-cash"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliveryAddressId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"voucherId\": null,\n  \"tax\": 100.00,\n  \"recipientName\": \"Nguyen Van A\",\n  \"recipientPhone\": \"0901234567\",\n  \"deliveryAddress\": \"123 Nguyen Hue, District 1, HCMC\",\n  \"deliveryMethodName\": \"Express\",\n  \"deliveryDate\": \"2025-11-10\",\n  \"deliveryTimeSlot\": \"09:00-12:00\",\n  \"orderItems\": [\n    {\n      \"productVariantId\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"quantity\": 2\n    }\n  ],\n  \"totalProductAmount\": 1000.00,\n  \"shippingFee\": 50.00,\n  \"discountAmount\": 50.00,\n  \"totalPayment\": 1100.00,\n  \"paymentMethod\": \"COD\",\n  \"customerNote\": \"Giao hàng vào ngoài giờ vui lòng gọi trước\",\n  \"loyaltyPoints\": 0,\n  \"rankPoints\": 50.00\n}\n"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2. Get Order by ID (Check New Fields)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/orders/{{ORDER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "orders", "{{ORDER_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3. Get My Orders (All New Fields)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/orders/my-orders?page=0&size=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "orders", "my-orders"],
+              "query": [\n                {\n                  \"key\": \"page\",\n                  \"value\": \"0\"\n                },\n                {\n                  \"key\": \"size\",\n                  \"value\": \"10\"\n                }\n              ]\n            }\n          },
+          "response": []\n        }\n      ]\n    },\n    {\n      \"name\": \"Order Management - VNPay\",\n      \"item\": [\n        {\n          \"name\": \"1. Create VNPay Order (With New Fields)\",\n          \"request\": {\n            \"method\": \"POST\",\n            \"header\": [\n              {\n                \"key\": \"Content-Type\",\n                \"value\": \"application/json\"\n              },\n              {\n                \"key\": \"Authorization\",\n                \"value\": \"Bearer {{ACCESS_TOKEN}}\"\n              }\n            ],\n            \"url\": {\n              \"raw\": \"{{BASE_URL}}/api/orders/create-vnpay\",\n              \"host\": [\"{{BASE_URL}}\"],\n              \"path\": [\"api\", \"orders\", \"create-vnpay\"]\n            },\n            \"body\": {\n              \"mode\": \"raw\",\n              \"raw\": \"{\n  \\\"deliveryAddressId\\\": \\\"550e8400-e29b-41d4-a716-446655440000\\\",\n  \\\"tax\\\": 100.00,\n  \\\"rankPoints\\\": 50.00,\n  \\\"recipientName\\\": \\\"Nguyen Van A\\\",\n  \\\"recipientPhone\\\": \\\"0901234567\\\",\n  \\\"deliveryAddress\\\": \\\"123 Nguyen Hue, District 1, HCMC\\\",\n  \\\"deliveryMethodName\\\": \\\"Express\\\",\n  \\\"deliveryDate\\\": \\\"2025-11-10\\\",\n  \\\"deliveryTimeSlot\\\": \\\"09:00-12:00\\\",\n  \\\"orderItems\\\": [\n    {\n      \\\"productVariantId\\\": \\\"550e8400-e29b-41d4-a716-446655440001\\\",\n      \\\"quantity\\\": 1\n    }\n  ],\n  \\\"totalProductAmount\\\": 1000.00,\n  \\\"shippingFee\\\": 50.00,\n  \\\"discountAmount\\\": 50.00,\n  \\\"totalPayment\\\": 1100.00,\n  \\\"paymentMethod\\\": \\\"VNPAY\\\",\n  \\\"loyaltyPoints\\\": 0\n}\"\n            }\n          },\n          \"response\": []\n        }\n      ]\n    },\n    {\n      \"name\": \"Admin - Advanced Filters\",\n      \"item\": [\n        {\n          \"name\": \"1. Filter Orders by DeliveryAddressId\",\n          \"request\": {\n            \"method\": \"GET\",\n            \"header\": [\n              {\n                \"key\": \"Authorization\",\n                \"value\": \"Bearer {{ADMIN_TOKEN}}\"\n              }\n            ],\n            \"url\": {\n              \"raw\": \"{{BASE_URL}}/api/orders/admin/by-delivery-address?deliveryAddressId=550e8400-e29b-41d4-a716-446655440000&page=0&size=20\",\n              \"host\": [\"{{BASE_URL}}\"],\n              \"path\": [\"api\", \"orders\", \"admin\", \"by-delivery-address\"],\n              \"query\": [\n                {\n                  \"key\": \"deliveryAddressId\",\n                  \"value\": \"550e8400-e29b-41d4-a716-446655440000\"\n                },\n                {\n                  \"key\": \"page\",\n                  \"value\": \"0\"\n                },\n                {\n                  \"key\": \"size\",\n                  \"value\": \"20\"\n                }\n              ]\n            }\n          },\n          \"response\": []\n        },\n        {\n          \"name\": \"2. Filter Orders by RankPoints (Threshold)\",\n          \"request\": {\n            \"method\": \"GET\",\n            \"header\": [\n              {\n                \"key\": \"Authorization\",\n                \"value\": \"Bearer {{ADMIN_TOKEN}}\"\n              }\n            ],\n            \"url\": {\n              \"raw\": \"{{BASE_URL}}/api/orders/admin/by-rank-points?minRankPoints=50&page=0&size=20\",\n              \"host\": [\"{{BASE_URL}}\"],\n              \"path\": [\"api\", \"orders\", \"admin\", \"by-rank-points\"],\n              \"query\": [\n                {\n                  \"key\": \"minRankPoints\",\n                  \"value\": \"50\"\n                },\n                {\n                  \"key\": \"page\",\n                  \"value\": \"0\"\n                },\n                {\n                  \"key\": \"size\",\n                  \"value\": \"20\"\n                }\n              ]\n            }\n          },\n          \"response\": []\n        }\n      ]\n    }\n  ],\n  \"variable\": [\n    {\n      \"key\": \"BASE_URL\",\n      \"value\": \"http://localhost:8080\"\n    },\n    {\n      \"key\": \"ACCESS_TOKEN\",\n      \"value\": \"your_customer_token_here\"\n    },\n    {\n      \"key\": \"ADMIN_TOKEN\",\n      \"value\": \"your_admin_token_here\"\n    },\n    {\n      \"key\": \"ORDER_ID\",\n      \"value\": \"order_uuid_here\"\n    }\n  ]\n}\n

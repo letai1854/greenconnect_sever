@@ -1,0 +1,250 @@
+{
+  "examples": {
+    "1_chat_new_session": {
+      "description": "User chat lần đầu (sessionId = null)",
+      "request": {
+        "method": "POST",
+        "url": "/api/chat/ask",
+        "body": {
+          "userQuery": "Tôi muốn mua thịt gà",
+          "userId": "123e4567-e89b-12d3-a456-426614174000",
+          "sessionId": null
+        }
+      },
+      "response": {
+        "sessionId": "987fcdeb-51a2-4b3c-9d6e-123456789abc",
+        "botMessage": "Dạ, chúng tôi có nhiều loại thịt gà tươi ngon. Anh/chị xem các sản phẩm này nhé!",
+        "products": [
+          {
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "name": "Thịt gà ta nguyên con",
+            "mainImage": "https://storage.googleapis.com/greenconnect/products/chicken1.jpg",
+            "priceRange": "120.000₫ - 150.000₫",
+            "rating": 4.8,
+            "sold": 1250,
+            "supplierName": "Nông trại ABC"
+          },
+          {
+            "id": "b2c3d4e5-f6g7-8901-bcde-f12345678901",
+            "name": "Thịt gà đùi phi lê",
+            "mainImage": "https://storage.googleapis.com/greenconnect/products/chicken2.jpg",
+            "priceRange": "85.000₫ - 95.000₫",
+            "rating": 4.7,
+            "sold": 980,
+            "supplierName": "Nông trại XYZ"
+          }
+        ]
+      }
+    },
+    "2_chat_continue_session": {
+      "description": "User tiếp tục chat (sessionId có giá trị)",
+      "request": {
+        "method": "POST",
+        "url": "/api/chat/ask",
+        "body": {
+          "userQuery": "Món khác đi",
+          "userId": "123e4567-e89b-12d3-a456-426614174000",
+          "sessionId": "987fcdeb-51a2-4b3c-9d6e-123456789abc"
+        }
+      },
+      "response": {
+        "sessionId": "987fcdeb-51a2-4b3c-9d6e-123456789abc",
+        "botMessage": "Dạ vâng, chúng tôi còn có thịt heo và thịt bò tươi ngon. Anh/chị tham khảo nhé!",
+        "products": [
+          {
+            "id": "c3d4e5f6-g7h8-9012-cdef-123456789012",
+            "name": "Thịt ba chỉ heo",
+            "mainImage": "https://storage.googleapis.com/greenconnect/products/pork1.jpg",
+            "priceRange": "95.000₫ - 110.000₫",
+            "rating": 4.6,
+            "sold": 750,
+            "supplierName": "Nông trại DEF"
+          },
+          {
+            "id": "d4e5f6g7-h8i9-0123-defg-234567890123",
+            "name": "Thịt bò úc nạc",
+            "mainImage": "https://storage.googleapis.com/greenconnect/products/beef1.jpg",
+            "priceRange": "180.000₫ - 220.000₫",
+            "rating": 4.9,
+            "sold": 620,
+            "supplierName": "Nhập khẩu GHI"
+          }
+        ]
+      }
+    },
+    "3_load_history_page_0": {
+      "description": "Load lịch sử chat page đầu tiên (10 tin nhắn đầu)",
+      "request": {
+        "method": "GET",
+        "url": "/api/chat/sessions/987fcdeb-51a2-4b3c-9d6e-123456789abc?userId=123e4567-e89b-12d3-a456-426614174000&page=0&size=10"
+      },
+      "response": {
+        "sessionId": "987fcdeb-51a2-4b3c-9d6e-123456789abc",
+        "sessionTitle": "Hỏi về thịt gà",
+        "currentPage": 0,
+        "pageSize": 10,
+        "totalMessages": 25,
+        "totalPages": 3,
+        "messages": [
+          {
+            "id": "msg-001",
+            "sender": "USER",
+            "content": "Tôi muốn mua thịt gà",
+            "createdAt": "2025-12-10T10:30:00",
+            "suggestedProducts": null
+          },
+          {
+            "id": "msg-002",
+            "sender": "BOT",
+            "content": "Dạ, chúng tôi có nhiều loại thịt gà tươi ngon. Anh/chị xem các sản phẩm này nhé!",
+            "createdAt": "2025-12-10T10:30:05",
+            "suggestedProducts": [
+              {
+                "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "name": "Thịt gà ta nguyên con",
+                "mainImage": "https://storage.googleapis.com/greenconnect/products/chicken1.jpg",
+                "priceRange": "120.000₫ - 150.000₫",
+                "rating": 4.8,
+                "sold": 1250
+              }
+            ]
+          },
+          {
+            "id": "msg-003",
+            "sender": "USER",
+            "content": "Món khác đi",
+            "createdAt": "2025-12-10T10:31:00",
+            "suggestedProducts": null
+          },
+          {
+            "id": "msg-004",
+            "sender": "BOT",
+            "content": "Dạ vâng, chúng tôi còn có thịt heo và thịt bò tươi ngon. Anh/chị tham khảo nhé!",
+            "createdAt": "2025-12-10T10:31:05",
+            "suggestedProducts": [
+              {
+                "id": "c3d4e5f6-g7h8-9012-cdef-123456789012",
+                "name": "Thịt ba chỉ heo",
+                "mainImage": "https://storage.googleapis.com/greenconnect/products/pork1.jpg",
+                "priceRange": "95.000₫ - 110.000₫",
+                "rating": 4.6,
+                "sold": 750
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "4_load_history_page_1": {
+      "description": "Load lịch sử chat page thứ 2 (tin nhắn 11-20)",
+      "request": {
+        "method": "GET",
+        "url": "/api/chat/sessions/987fcdeb-51a2-4b3c-9d6e-123456789abc?userId=123e4567-e89b-12d3-a456-426614174000&page=1&size=10"
+      },
+      "response": {
+        "sessionId": "987fcdeb-51a2-4b3c-9d6e-123456789abc",
+        "sessionTitle": "Hỏi về thịt gà",
+        "currentPage": 1,
+        "pageSize": 10,
+        "totalMessages": 25,
+        "totalPages": 3,
+        "messages": [
+          {
+            "id": "msg-011",
+            "sender": "USER",
+            "content": "Có rau sạch không?",
+            "createdAt": "2025-12-10T10:35:00",
+            "suggestedProducts": null
+          },
+          {
+            "id": "msg-012",
+            "sender": "BOT",
+            "content": "Dạ có ạ, chúng tôi có nhiều loại rau sạch đạt chuẩn VietGAP!",
+            "createdAt": "2025-12-10T10:35:05",
+            "suggestedProducts": [
+              {
+                "id": "e5f6g7h8-i9j0-1234-efgh-345678901234",
+                "name": "Rau cải xanh hữu cơ",
+                "mainImage": "https://storage.googleapis.com/greenconnect/products/veggie1.jpg",
+                "priceRange": "15.000₫ - 20.000₫",
+                "rating": 4.5,
+                "sold": 2100
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "5_session_list": {
+      "description": "Danh sách tất cả session của user",
+      "request": {
+        "method": "GET",
+        "url": "/api/chat/sessions?userId=123e4567-e89b-12d3-a456-426614174000"
+      },
+      "response": {
+        "sessions": [
+          {
+            "id": "987fcdeb-51a2-4b3c-9d6e-123456789abc",
+            "title": "Hỏi về thịt gà",
+            "updatedAt": "2025-12-10T15:30:00",
+            "messageCount": 25,
+            "lastMessage": "Cảm ơn anh/chị đã mua hàng!"
+          },
+          {
+            "id": "876edcba-41b1-3c2d-8e5f-012345678901",
+            "title": "Tìm rau sạch",
+            "updatedAt": "2025-12-09T10:20:00",
+            "messageCount": 12,
+            "lastMessage": "Chúng tôi có rau bó xôi tươi..."
+          },
+          {
+            "id": "765dcba9-31a0-2b1c-7d4e-901234567890",
+            "title": "Hỏi về trái cây nhập khẩu",
+            "updatedAt": "2025-12-08T14:45:00",
+            "messageCount": 8,
+            "lastMessage": "Táo Mỹ và nho Úc đang có khuyến mãi"
+          }
+        ]
+      }
+    },
+    "6_delete_session": {
+      "description": "Xóa session (soft delete)",
+      "request": {
+        "method": "DELETE",
+        "url": "/api/chat/sessions/987fcdeb-51a2-4b3c-9d6e-123456789abc?userId=123e4567-e89b-12d3-a456-426614174000"
+      },
+      "response": {
+        "status": 204,
+        "body": null
+      }
+    },
+    "7_error_session_not_found": {
+      "description": "Error: Session không tồn tại",
+      "request": {
+        "method": "GET",
+        "url": "/api/chat/sessions/invalid-uuid?userId=123e4567-e89b-12d3-a456-426614174000&page=0&size=10"
+      },
+      "response": {
+        "status": 404,
+        "body": {
+          "code": "CHAT_SESSION_NOT_FOUND",
+          "message": "Session không tồn tại hoặc đã bị xóa"
+        }
+      }
+    },
+    "8_error_access_denied": {
+      "description": "Error: User không có quyền truy cập session",
+      "request": {
+        "method": "GET",
+        "url": "/api/chat/sessions/987fcdeb-51a2-4b3c-9d6e-123456789abc?userId=wrong-user-id&page=0&size=10"
+      },
+      "response": {
+        "status": 403,
+        "body": {
+          "code": "ACCESS_DENIED",
+          "message": "Bạn không có quyền truy cập session này"
+        }
+      }
+    }
+  }
+}

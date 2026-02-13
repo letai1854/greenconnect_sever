@@ -1,0 +1,311 @@
+{
+	"info": {
+		"name": "GreenConnect Multi-Role Test",
+		"description": "Collection để test multi-role system với JWT scope",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "testUserId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Create Test User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('testUserId', response.userId);",
+							"    pm.test('User created successfully', () => {",
+							"        pm.expect(response.message).to.include('success');",
+							"        pm.expect(response.roles).to.be.an('array');",
+							"        pm.expect(response.primaryRole).to.not.be.undefined;",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"testmultirole@greenconnect.com\",\n    \"fullName\": \"Test Multi Role User\",\n    \"roles\": \"CUSTOMER,ADMIN,SHIPPER\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/test/create-test-user",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "create-test-user"]
+				},
+				"description": "Tạo user test với nhiều roles"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Generate JWT Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('accessToken', response.accessToken);",
+							"    pm.test('Token generated successfully', () => {",
+							"        pm.expect(response.accessToken).to.not.be.undefined;",
+							"        pm.expect(response.decodedToken.scope).to.include('CUSTOMER');",
+							"        pm.expect(response.decodedToken.scope).to.include('ADMIN');",
+							"        pm.expect(response.decodedToken.scope).to.include('SHIPPER');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/test/users/{{testUserId}}/generate-token",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "users", "{{testUserId}}", "generate-token"]
+				},
+				"description": "Generate JWT token với multiple roles trong scope"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Decode JWT Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.test('JWT decoded successfully', () => {",
+							"        pm.expect(response.scope).to.not.be.undefined;",
+							"        pm.expect(response.allRoles).to.be.an('array');",
+							"        pm.expect(response.primaryRole).to.not.be.undefined;",
+							"        pm.expect(response.isValid).to.be.true;",
+							"    });",
+							"    pm.test('Scope contains multiple roles', () => {",
+							"        pm.expect(response.scope).to.include('CUSTOMER');",
+							"        pm.expect(response.scope).to.include('ADMIN');",
+							"        pm.expect(response.scope).to.include('SHIPPER');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/test/jwt-decode",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "jwt-decode"]
+				},
+				"description": "Decode JWT token để xem scope và roles"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Add New Role",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.test('Role added successfully', () => {",
+							"        pm.expect(response.message).to.include('success');",
+							"        pm.expect(response.roleAdded).to.eq('ORDER_MANAGER');",
+							"        pm.expect(response.currentRoles).to.include('ORDER_MANAGER');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/test/users/{{testUserId}}/roles/ORDER_MANAGER",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "users", "{{testUserId}}", "roles", "ORDER_MANAGER"]
+				},
+				"description": "Thêm role ORDER_MANAGER cho user"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Generate New Token (4 roles)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('accessToken', response.accessToken);",
+							"    pm.test('New token with 4 roles generated', () => {",
+							"        pm.expect(response.activeRoles).to.have.lengthOf(4);",
+							"        pm.expect(response.decodedToken.scope).to.include('ORDER_MANAGER');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/test/users/{{testUserId}}/generate-token",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "users", "{{testUserId}}", "generate-token"]
+				},
+				"description": "Generate token mới sau khi thêm role"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Get User Roles Detail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.test('User roles retrieved successfully', () => {",
+							"        pm.expect(response.activeRoles).to.be.an('array');",
+							"        pm.expect(response.allUserRoles).to.be.an('array');",
+							"        pm.expect(response.primaryRole).to.not.be.undefined;",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/test/users/{{testUserId}}/roles",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "users", "{{testUserId}}", "roles"]
+				},
+				"description": "Xem chi tiết tất cả roles của user"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Decode Updated Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.test('Updated token contains all 4 roles', () => {",
+							"        pm.expect(response.allRoles).to.have.lengthOf(4);",
+							"        pm.expect(response.scope).to.include('ORDER_MANAGER');",
+							"        pm.expect(response.scope.split(' ')).to.have.lengthOf(4);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/test/jwt-decode",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "jwt-decode"]
+				},
+				"description": "Decode token sau khi thêm role mới"
+			},
+			"response": []
+		},
+		{
+			"name": "8. Get All Users Summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.test('Users summary retrieved', () => {",
+							"        pm.expect(response).to.be.an('array');",
+							"        if (response.length > 0) {",
+							"            pm.expect(response[0].activeRoles).to.be.an('array');",
+							"        }",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/test/users-roles-summary",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "test", "users-roles-summary"]
+				},
+				"description": "Xem tổng quan tất cả users và roles"
+			},
+			"response": []
+		}
+	]
+}

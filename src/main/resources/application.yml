@@ -1,0 +1,169 @@
+# Spring Boot Application Configuration
+
+server:
+  port: 8080
+  # 🔥 QUAN TRỌNG: Lắng nghe trên tất cả network interfaces (0.0.0.0)
+  # Điều này cho phép Android Emulator (10.0.2.2) và thiết bị vật lý kết nối được
+  address: 0.0.0.0
+  # ⭐ TOMCAT CONFIGURATION - Giữ kết nối WebSocket sống lâu hơn
+  tomcat:
+    connection-timeout: 600000        # 10 phút connection timeout
+    keep-alive-timeout: 600000        # 10 phút keep-alive
+    max-keep-alive-requests: 1000     # Số request tối đa trên 1 keep-alive connection
+
+spring:
+  application:
+    name: greenconnect-api
+  
+  # Database Configuration - Aiven MySQL
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/defaultdb?serverTimezone=Asia/Ho_Chi_Minh}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Ho_Chi_Minh  # ⭐ QUAN TRỌNG: Lưu/đọc DB theo giờ Việt Nam
+    defer-datasource-initialization: true
+  
+  # Redis Configuration (if using caching)
+  # redis:
+  #   host: localhost
+  #   port: 6379
+  #   timeout: 2000ms
+  
+  # Elasticsearch Configuration - ĐÃ COMMENT OUT (dùng MySQL LIKE thay thế)
+  # elasticsearch:
+  #   uris: https://0836dcbc12294822963bf23edb74f275.us-central1.gcp.cloud.es.io:443
+  #   username: elastic
+  #   password: qXO41GO2qgXB0mdzTJw2J9fC
+  #   connection-timeout: 30s
+  #   socket-timeout: 60s 
+    
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# # JWT Configuration
+# jwt:
+#   signerkey: "YXZuYWRtaW5HcmVlbkNvbm5lY3RTZWNyZXRLZXlGb3JKV1RUb2tlbjIwMjVBdXRoZW50aWNhdGlvblN1cGVyU2VjdXJlS2V5UmFuZG9tU3RyaW5n"
+#   access-token-expiration: 86400000 # 24 hours in milliseconds
+#   refresh-token-expiration: 604800000 # 7 days in milliseconds
+
+# ========================================
+# 💳 VNPAY PAYMENT GATEWAY CONFIGURATION
+# ========================================
+# 📋 THÔNG TIN TỪ .ENV FILE - KHÔNG CẦN SỬA Ở ĐÂY!
+# 🔧 Muốn thay đổi? → Sửa trong file .env
+vnpay:
+  # 🌐 VNPay Gateway URLs  
+  url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"  # TODO PRODUCTION: Đổi thành https://vnpay.vn/paymentv2/vpcpay.html
+  
+  # 🏢 Merchant Configuration - TỰ ĐỘNG LOAD TỪ .ENV FILE
+  tmn-code: ${VNPAY_TMN_CODE:}              # ← Load từ .env: VNPAY_TMN_CODE 
+  hash-secret: ${VNPAY_HASH_SECRET:}        # ← Load từ .env: VNPAY_HASH_SECRET (🔒 BÍ MẬT!)
+  
+  # 🔄 Callback URLs - TỰ ĐỘNG LOAD TỪ .ENV FILE  
+  return-url: ${VNPAY_RETURN_URL:http://localhost:3000/payment-result}             # ← Frontend URL (VNPay redirect trình duyệt user về Frontend)
+  callback-url: ${VNPAY_CALLBACK_URL:http://localhost:8080/orders/vnpay-callback} # ← Backend URL (VNPay server gọi IPN - nguồn chân lý)
+  
+  # Payment Configuration
+  version: "2.1.0"      # VNPay API version
+  command: "pay"        # Lệnh thanh toán
+  order-type: "other"   # Loại đơn hàng: other, billpayment, fashion, etc.
+  currency-code: "VND"  # Đơn vị tiền tệ
+  locale: "vn"          # Ngôn ngữ giao diện: vn/en
+  ip-addr: ${VNPAY_IP_ADDR:127.0.0.1}  # ← IP server thực hiện refund/querydr (Load từ .env)
+  
+  # Timeout Configuration (Optional)
+  timeout: 900          # Timeout thanh toán (giây) - 15 phút
+  
+  # Security Configuration
+  secure-hash-type: "SHA512"  # Loại hash: SHA512 (VNPay requirement), SHA256, MD5, SHA1
+
+# ========================================
+# 🗺️ GOOGLE MAPS API CONFIGURATION  
+# ========================================
+google:
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:} # ← TODO: Tạo API key tại Google Cloud Console
+
+# ========================================
+# 🔥 FIREBASE CONFIGURATION
+# ========================================
+firebase:
+  config-file: "classpath:serviceAccountKey.json"  # ← TODO: Update service account key file
+  bucket-name: ${FIREBASE_BUCKET_NAME:cloudgreenconnect.appspot.com} # ← Load từ .env hoặc dùng default
+  web-api-key: ${FIREBASE_WEB_API_KEY:}  # ← Load từ .env
+  project-id: "cloudgreenconnect"    # ← TODO: Update với project ID thật
+  project-number: "638386564394"     # ← TODO: Update với project number thật
+
+# ========================================
+# 🤖 RECOMBEE RECOMMENDATION ENGINE
+# ========================================
+
+# Logging Configuration
+logging:
+  level:
+    com.greenconnect.greenconnect_api: INFO
+    com.greenconnect.greenconnect_api.services.RecombeeSyncService: DEBUG  # ← Enable DEBUG for Recombee tracking
+    com.greenconnect.greenconnect_api.config.RecombeeConfig: INFO
+    com.greenconnect.greenconnect_api.config.RecombeeSchemaInitializer: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging: INFO
+    org.springframework.boot: INFO
+    org.hibernate.dialect: WARN
+    org.hibernate.orm.deprecation: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{50}) - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+
+# ========================================
+# 🔐 JWT AUTHENTICATION CONFIGURATION
+# ========================================
+jwt:
+  signerkey: ${JWT_SIGNER_KEY:} # ← Load từ .env
+  access-token-expiration:   36000     # 30 phút (có thể tăng lên 3600 = 1 tiếng)
+  refresh-token-expiration:  2592000  # 30 ngày (TODO: Có thể giảm xuống 604800 = 7 ngày cho bảo mật)
+
+# Application Security Configuration
+app:
+  security:
+    max-tokens-per-user: 20  # ⭐ Số lượng thiết bị tối đa mỗi user có thể đăng nhập cùng lúc
+  
+  # Invitation System Configuration
+  invitation:
+    token-expiry-hours: 24  # Activation token hết hạn sau 24 giờ
+    base-url: ${INVITATION_BASE_URL:https://cloudgreenconnect.web.app}  # Frontend URL để build activation link
+
+
+recombee:
+  database-id: ${RECOMBEE_DB_ID:tai-prod}  # ← Recombee Database ID
+  private-token: ${RECOMBEE_PRIVATE_TOKEN:}  # ← 🔒 Load từ .env
+gemini:
+  api:
+    # Spring sẽ tự tìm biến GEMINI_API_KEY trong hệ thống
+    key: ${GEMINI_API_KEY}
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+
+# ========================================
+# 🚚 GHTK SHIPPING API CONFIGURATION
+# ========================================
+ghtk:
+  api:
+    url: https://services.giaohangtietkiem.vn/services/shipment/fee
+    token: ${GHTK_API_TOKEN:}  # ← Load từ .env: GHTK_API_TOKEN

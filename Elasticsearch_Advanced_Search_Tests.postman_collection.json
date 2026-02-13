@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "elasticsearch-advanced-search-001",
+		"name": "Elasticsearch Advanced Search Tests",
+		"description": "Test collection cho Elasticsearch Advanced Search với multi-filter (categories, suppliers, priceRange, sortBy enum)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Tìm kiếm cơ bản",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products?keyword=rau&page=0&size=10",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products"],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "rau",
+							"description": "Từ khóa tìm kiếm"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				},
+				"description": "Tìm kiếm sản phẩm cơ bản theo keyword"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Advanced Search - Multi Suppliers (OR logic)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?supplierIds=supplier-uuid-1&supplierIds=supplier-uuid-2&supplierIds=supplier-uuid-3&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "supplierIds",
+							"value": "supplier-uuid-1",
+							"description": "Nhà cung cấp 1 (logic OR)"
+						},
+						{
+							"key": "supplierIds",
+							"value": "supplier-uuid-2",
+							"description": "Nhà cung cấp 2 (logic OR)"
+						},
+						{
+							"key": "supplierIds",
+							"value": "supplier-uuid-3",
+							"description": "Nhà cung cấp 3 (logic OR)"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Lọc sản phẩm theo NHIỀU nhà cung cấp (logic OR)\n→ Hiển thị sản phẩm thuộc BẤT KỲ supplier nào trong danh sách"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Advanced Search - Multi Categories (OR logic)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?categoryIds=category-uuid-1&categoryIds=category-uuid-2&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "categoryIds",
+							"value": "category-uuid-1",
+							"description": "Danh mục 1 (logic OR)"
+						},
+						{
+							"key": "categoryIds",
+							"value": "category-uuid-2",
+							"description": "Danh mục 2 (logic OR)"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Lọc sản phẩm theo NHIỀU danh mục (logic OR)\n→ Hiển thị sản phẩm thuộc BẤT KỲ category nào trong danh sách"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Advanced Search - Price Range Enum",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?priceRange=FROM_100K_TO_200K&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "priceRange",
+							"value": "FROM_100K_TO_200K",
+							"description": "Khoảng giá: ALL, UNDER_100K, FROM_100K_TO_200K, FROM_200K_TO_500K, FROM_500K_TO_1M, FROM_1M_TO_3M, OVER_3M"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Lọc sản phẩm theo khoảng giá enum\n\nCác giá trị:\n- ALL: Tất cả\n- UNDER_100K: Dưới 100.000đ\n- FROM_100K_TO_200K: 100k - 200k\n- FROM_200K_TO_500K: 200k - 500k\n- FROM_500K_TO_1M: 500k - 1 triệu\n- FROM_1M_TO_3M: 1 triệu - 3 triệu\n- OVER_3M: Trên 3 triệu"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Advanced Search - Sort by Price ASC",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?sortBy=PRICE_ASC&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "sortBy",
+							"value": "PRICE_ASC",
+							"description": "Sắp xếp: PRICE_ASC, PRICE_DESC, NAME_ASC, NAME_DESC, NEWEST, OLDEST, RATING_ASC, RATING_DESC"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Sắp xếp sản phẩm theo giá tăng dần\n\nCác giá trị sortBy:\n- PRICE_ASC: Giá thấp → cao\n- PRICE_DESC: Giá cao → thấp\n- NAME_ASC: Tên A → Z\n- NAME_DESC: Tên Z → A\n- NEWEST: Mới nhất\n- OLDEST: Cũ nhất\n- RATING_ASC: Đánh giá thấp → cao\n- RATING_DESC: Đánh giá cao → thấp"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Advanced Search - Sort by Rating DESC",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?sortBy=RATING_DESC&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "sortBy",
+							"value": "RATING_DESC",
+							"description": "Sắp xếp theo đánh giá cao nhất"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Sắp xếp sản phẩm theo đánh giá cao nhất"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Advanced Search - In Stock Only",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?inStock=true&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "inStock",
+							"value": "true",
+							"description": "Chỉ lấy sản phẩm còn hàng"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Lọc chỉ lấy sản phẩm còn hàng (inStock = true)"
+			},
+			"response": []
+		},
+		{
+			"name": "8. Advanced Search - FULL COMBO",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?keyword=rau&categoryIds=category-1&categoryIds=category-2&supplierIds=supplier-1&supplierIds=supplier-2&priceRange=UNDER_100K&inStock=true&sortBy=PRICE_ASC&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "rau",
+							"description": "Từ khóa"
+						},
+						{
+							"key": "categoryIds",
+							"value": "category-1",
+							"description": "Danh mục 1"
+						},
+						{
+							"key": "categoryIds",
+							"value": "category-2",
+							"description": "Danh mục 2"
+						},
+						{
+							"key": "supplierIds",
+							"value": "supplier-1",
+							"description": "Nhà cung cấp 1"
+						},
+						{
+							"key": "supplierIds",
+							"value": "supplier-2",
+							"description": "Nhà cung cấp 2"
+						},
+						{
+							"key": "priceRange",
+							"value": "UNDER_100K",
+							"description": "Dưới 100k"
+						},
+						{
+							"key": "inStock",
+							"value": "true",
+							"description": "Còn hàng"
+						},
+						{
+							"key": "sortBy",
+							"value": "PRICE_ASC",
+							"description": "Giá tăng dần"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Test tất cả filters cùng lúc:\n- Keyword: rau\n- Multi categories (OR)\n- Multi suppliers (OR)\n- Price range: Dưới 100k\n- In stock only\n- Sort: Giá tăng dần\n- Chỉ sản phẩm active"
+			},
+			"response": []
+		},
+		{
+			"name": "9. Advanced Search - Sort NEWEST",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?sortBy=NEWEST&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "sortBy",
+							"value": "NEWEST",
+							"description": "Sản phẩm mới nhất"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Lấy sản phẩm mới nhất (sort by createdAt DESC)"
+			},
+			"response": []
+		},
+		{
+			"name": "10. Advanced Search - Price Range OVER_3M",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/search/products/advanced?priceRange=OVER_3M&sortBy=PRICE_DESC&page=0&size=20",
+					"host": ["{{base_url}}"],
+					"path": ["search", "products", "advanced"],
+					"query": [
+						{
+							"key": "priceRange",
+							"value": "OVER_3M",
+							"description": "Trên 3 triệu"
+						},
+						{
+							"key": "sortBy",
+							"value": "PRICE_DESC",
+							"description": "Giá cao nhất trước"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Lọc sản phẩm giá trên 3 triệu, sắp xếp giá cao → thấp"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

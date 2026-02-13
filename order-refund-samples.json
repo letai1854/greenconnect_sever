@@ -1,0 +1,81 @@
+[
+  {
+    "name": "cancel_cod",
+    "description": "Cancel request where payment method is COD - expected behavior: service marks COMPLETED and refundAmount becomes null/COMPLETED",
+    "orderId": "11111111-1111-1111-1111-111111111111",
+    "userId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "requestType": "CANCEL",
+    "reason": "Customer canceled the order before it was shipped.",
+    "refundAmount": null,
+    "customerBankAccountName": null,
+    "customerBankAccountNumber": null,
+    "customerBankCode": null,
+    "bankTransactionCode": null,
+    "requestMediaIds": []
+  },
+
+  {
+    "name": "cancel_transfer",
+    "description": "Cancel request where payment method is transfer (non-COD) - expected behavior: service sets COMPLETED and refundStatus=PENDING_PROCESSING; refundAmount provided",
+    "orderId": "11111111-1111-1111-1111-111111111112",
+    "userId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "requestType": "CANCEL",
+    "reason": "Customer canceled after checkout; payed via bank transfer.",
+    "refundAmount": 150000.00,
+    "customerBankAccountName": "Nguyen Van A",
+    "customerBankAccountNumber": "1234567890",
+    "customerBankCode": "VCB",
+    "bankTransactionCode": "TXN123456",
+    "requestMediaIds": []
+  },
+
+  {
+    "name": "return_no_bank_info",
+    "description": "Return request where customer hasn't provided bank info yet - expected behavior: refundStatus=PENDING_CUSTOMER_INFO",
+    "orderId": "22222222-2222-2222-2222-222222222221",
+    "userId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "requestType": "RETURN",
+    "reason": "Received damaged item - requesting return and refund.",
+    "refundAmount": 200000.00,
+    "customerBankAccountName": null,
+    "customerBankAccountNumber": null,
+    "customerBankCode": null,
+    "bankTransactionCode": null,
+    "requestMediaIds": []
+  },
+
+  {
+    "name": "return_with_bank_info",
+    "description": "Return request where customer already supplied bank info - expected behavior: admin can process and refundStatus moves along processing/completed",
+    "orderId": "22222222-2222-2222-2222-222222222222",
+    "userId": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+    "requestType": "RETURN",
+    "reason": "Wrong color/size delivered - returning and requesting refund.",
+    "refundAmount": 320000.00,
+    "customerBankAccountName": "Tran Thi B",
+    "customerBankAccountNumber": "0987654321",
+    "customerBankCode": "ACB",
+    "bankTransactionCode": null,
+    "requestMediaIds": [
+      "33333333-3333-3333-3333-333333333333",
+      "33333333-3333-3333-3333-333333333334"
+    ]
+  },
+
+  {
+    "name": "return_with_media_only",
+    "description": "Return request including media ids (images/proof) - used to test requestMedia linking",
+    "orderId": "22222222-2222-2222-2222-222222222223",
+    "userId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+    "requestType": "RETURN",
+    "reason": "Product missing parts - sending photos",
+    "refundAmount": 50000.00,
+    "customerBankAccountName": null,
+    "customerBankAccountNumber": null,
+    "customerBankCode": null,
+    "bankTransactionCode": null,
+    "requestMediaIds": [
+      "44444444-4444-4444-4444-444444444444"
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "recipientName": "Nguyễn Văn Test",
+  "recipientPhone": "0987654321",
+  "deliveryAddress": "123 Đường Test, Phường Test, Quận Test, TP.HCM",
+  "deliveryMethodName": "Giao hàng tiêu chuẩn", 
+  "deliveryDate": "2025-09-26",
+  "deliveryTimeSlot": "08:00-12:00",
+  "customerNote": "Test order không voucher",
+  "totalProductAmount": 500000,
+  "shippingFee": 25000,
+  "discountAmount": 0,
+  "totalPayment": 525000,
+  "loyaltyPoints": 0,
+  "paymentMethod": "COD",
+  "voucherId": null,
+  "orderItems": [
+    {
+      "productVariantId": "PRODUCT_VARIANT_ID_HERE",
+      "quantity": 2
+    }
+  ]
+}

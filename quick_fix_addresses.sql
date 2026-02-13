@@ -1,0 +1,6 @@
+-- -- Quick fix: Drop old columns immediately
+-- ALTER TABLE addresses DROP COLUMN IF EXISTS ward;
+-- ALTER TABLE addresses DROP COLUMN IF EXISTS district;
+-- ALTER TABLE addresses DROP COLUMN IF EXISTS city;
+-- ALTER TABLE addresses DROP COLUMN IF EXISTS district_new;
+-- ALTER TABLE addresses DROP COLUMN IF EXISTS city_new;

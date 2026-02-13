@@ -1,0 +1,28 @@
+package com.greenconnect.greenconnect_api.dtos.response;
+
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Response DTO cho danh sách thông báo gần đây kèm số lượng chưa đọc
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class RecentNotificationsResponse {
+    
+    /**
+     * Danh sách thông báo (tối đa 6)
+     */
+    private List<NotificationResponse> notifications;
+    
+    /**
+     * Tổng số thông báo chưa đọc
+     */
+    private long unreadCount;
+}

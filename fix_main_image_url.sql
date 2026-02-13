@@ -1,0 +1,16 @@
+-- -- SQL to update mainImageUrl for existing variants
+-- UPDATE product_variants pv 
+-- SET main_image_url = (
+--     SELECT pi.media_url 
+--     FROM product_images pi 
+--     WHERE pi.variant_id = pv.id 
+--       AND pi.media_type = 'IMAGE'
+--     ORDER BY pi.display_order ASC 
+--     LIMIT 1
+-- )
+-- WHERE pv.main_image_url IS NULL 
+--   AND EXISTS (
+--     SELECT 1 FROM product_images pi2 
+--     WHERE pi2.variant_id = pv.id 
+--       AND pi2.media_type = 'IMAGE'
+--   );

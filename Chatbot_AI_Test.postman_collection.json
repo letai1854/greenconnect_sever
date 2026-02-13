@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "chatbot-ai-test-001",
+		"name": "🤖 Chatbot AI - Green Connect",
+		"description": "Collection để test Gemini AI Chatbot Integration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1️⃣ Test Chatbot - Nấu ăn (Soup gà)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Tôi muốn nấu món soup gà và rau củ, cần những nguyên liệu gì?\",\n  \"history\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot với câu hỏi về công thức nấu ăn - Gemini sẽ gợi ý nguyên liệu và sản phẩm phù hợp"
+			},
+			"response": []
+		},
+		{
+			"name": "2️⃣ Test Chatbot - Tìm sản phẩm rau xanh",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Tôi cần mua rau xanh tươi ngon\",\n  \"history\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot tìm kiếm sản phẩm theo loại - Gemini sẽ gợi ý các sản phẩm rau xanh có sẵn"
+			},
+			"response": []
+		},
+		{
+			"name": "3️⃣ Test Chatbot - Hỏi giá sản phẩm",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Các sản phẩm thịt gà của shop giá bao nhiêu?\",\n  \"history\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot trả lời về giá sản phẩm - Gemini sẽ gợi ý các sản phẩm thịt gà kèm giá"
+			},
+			"response": []
+		},
+		{
+			"name": "4️⃣ Test Chatbot - Với lịch sử chat",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Thịt gà đó có tươi không?\",\n  \"history\": [\n    {\n      \"role\": \"user\",\n      \"text\": \"Chào shop\"\n    },\n    {\n      \"role\": \"model\",\n      \"text\": \"Chào bạn! Tôi là trợ lý ảo Green Connect. Tôi có thể giúp gì cho bạn?\"\n    },\n    {\n      \"role\": \"user\",\n      \"text\": \"Tôi muốn mua thịt gà\"\n    },\n    {\n      \"role\": \"model\",\n      \"text\": \"Chúng tôi có nhiều loại thịt gà tươi ngon ạ. Dưới đây là một số sản phẩm phù hợp:\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot với lịch sử chat - Gemini sẽ hiểu ngữ cảnh và trả lời phù hợp"
+			},
+			"response": []
+		},
+		{
+			"name": "5️⃣ Test Chatbot - Sản phẩm không có",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Bạn có bán điện thoại iPhone không?\",\n  \"history\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot với sản phẩm không có trong database - Gemini sẽ trả lời lịch sự và không gợi ý sản phẩm"
+			},
+			"response": []
+		},
+		{
+			"name": "6️⃣ Test Chatbot - Món ăn phức tạp (Lẩu Thái)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Tôi muốn nấu lẩu Thái, cần mua gì?\",\n  \"history\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot với món ăn phức tạp - Gemini sẽ gợi ý nhiều loại nguyên liệu (tôm, mực, rau muống, nấm...)"
+			},
+			"response": []
+		},
+		{
+			"name": "7️⃣ Test Chatbot - Hỏi chung chung",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Chào shop, có gì ngon hôm nay không?\",\n  \"history\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot với câu hỏi chung chung - Gemini sẽ giới thiệu các sản phẩm bán chạy/nổi bật"
+			},
+			"response": []
+		},
+		{
+			"name": "8️⃣ Test Chatbot - Hỏi về shop",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userQuery\": \"Shop có giao hàng tận nhà không? Phí ship bao nhiêu?\",\n  \"history\": []\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/chat/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"chat",
+						"ask"
+					]
+				},
+				"description": "Test chatbot với câu hỏi về dịch vụ - Gemini sẽ trả lời dựa trên thông tin được training"
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,264 @@
+{
+  "info": {
+    "name": "Footer API - GreenConnect",
+    "description": "Complete Footer Management API with 8 endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET All Footer Data",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/footer?includeInactive=false",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "footer"],
+          "query": [
+            {
+              "key": "includeInactive",
+              "value": "false",
+              "description": "Include inactive sections/links"
+            }
+          ]
+        },
+        "description": "Lấy toàn bộ cấu hình footer (public endpoint)"
+      }
+    },
+    {
+      "name": "Sections",
+      "item": [
+        {
+          "name": "POST Create Section",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Công ty\",\n  \"sortOrder\": 1,\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/footer/sections",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "footer", "sections"]
+            },
+            "description": "Tạo nhóm footer mới (Admin only)"
+          }
+        },
+        {
+          "name": "PUT Update Section",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Công ty (Cập nhật)\",\n  \"sortOrder\": 2,\n  \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/footer/sections/:sectionId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "footer", "sections", ":sectionId"],
+              "variable": [
+                {
+                  "key": "sectionId",
+                  "value": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              ]
+            },
+            "description": "Cập nhật thông tin section (Admin only)"
+          }
+        },
+        {
+          "name": "DELETE Delete Section",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/footer/sections/:sectionId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "footer", "sections", ":sectionId"],
+              "variable": [
+                {
+                  "key": "sectionId",
+                  "value": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              ]
+            },
+            "description": "Xóa section và tất cả links trong đó (Admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Links",
+      "item": [
+        {
+          "name": "POST Create Link",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"iconKey\": \"FACEBOOK\",\n  \"value\": \"https://facebook.com/greenconnect\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/footer/sections/:sectionId/links",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "footer", "sections", ":sectionId", "links"],
+              "variable": [
+                {
+                  "key": "sectionId",
+                  "value": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              ]
+            },
+            "description": "Thêm link mới vào section (Admin only)"
+          }
+        },
+        {
+          "name": "PUT Update Link",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"iconKey\": \"INSTAGRAM\",\n  \"value\": \"https://instagram.com/greenconnect_new\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/footer/links/:linkId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "footer", "links", ":linkId"],
+              "variable": [
+                {
+                  "key": "linkId",
+                  "value": "uuid-link-1"
+                }
+              ]
+            },
+            "description": "Cập nhật link (Admin only)"
+          }
+        },
+        {
+          "name": "DELETE Delete Link",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/footer/links/:linkId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "footer", "links", ":linkId"],
+              "variable": [
+                {
+                  "key": "linkId",
+                  "value": "uuid-link-1"
+                }
+              ]
+            },
+            "description": "Xóa link (Admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bulk Operations",
+      "item": [
+        {
+          "name": "PUT Bulk Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sections\": [\n    {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"name\": \"Công ty\",\n      \"sortOrder\": 1,\n      \"isActive\": true,\n      \"links\": [\n        {\n          \"id\": \"uuid-link-1\",\n          \"iconKey\": \"FACEBOOK\",\n          \"value\": \"https://facebook.com/greenconnect\",\n          \"isActive\": true\n        },\n        {\n          \"id\": null,\n          \"iconKey\": \"INSTAGRAM\",\n          \"value\": \"https://instagram.com/greenconnect\",\n          \"isActive\": true\n        }\n      ]\n    },\n    {\n      \"id\": null,\n      \"name\": \"Nhóm mới\",\n      \"sortOrder\": 5,\n      \"isActive\": true,\n      \"links\": [\n        {\n          \"id\": null,\n          \"iconKey\": \"TWITTER\",\n          \"value\": \"https://twitter.com/greenconnect\",\n          \"isActive\": true\n        }\n      ]\n    }\n  ],\n  \"deletedSectionIds\": [\"uuid-old-section\"],\n  \"deletedLinkIds\": [\"uuid-old-link-1\", \"uuid-old-link-2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/footer/bulk-update",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "footer", "bulk-update"]
+            },
+            "description": "Cập nhật hàng loạt - Lưu tất cả thay đổi (Admin only)"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "your_jwt_token_here",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Support Agent Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: white; }
+        .status { font-weight: bold; padding: 5px 10px; border-radius: 3px; }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        .message-sent { background-color: #e3f2fd; margin: 5px 0; padding: 8px; border-radius: 3px; }
+        .message-received { background-color: #f1f8e9; margin: 5px 0; padding: 8px; border-radius: 3px; }
+        .message-broadcast { background-color: #fff3e0; margin: 5px 0; padding: 8px; border-radius: 3px; border-left: 4px solid #ff9800; }
+        .notification-new { background-color: #e8f5e8; margin: 5px 0; padding: 12px; border-radius: 5px; border-left: 5px solid #4caf50; }
+        input[type="text"], select { width: 100%; padding: 8px; margin: 5px 0; }
+        button { padding: 8px 15px; margin: 5px; cursor: pointer; }
+        #messages { height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; background-color: #fafafa; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .notification-sound { color: #ff6b00; font-weight: bold; }
+        .conversation-list { max-height: 200px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏢 Support Agent Dashboard</h1>
+        
+        <div class="grid">
+            <!-- Connection Section -->
+            <div class="section">
+                <h3>🔌 Connection</h3>
+                <label>JWT Token (Support Agent/Admin):</label>
+                <input type="text" id="jwtToken" placeholder="Nhập JWT token">
+                
+                <label>Your Role:</label>
+                <select id="userRole">
+                    <option value="ADMIN">Admin</option>
+                    <option value="CUSTOMER_SUPPORT">Customer Support</option>
+                </select>
+                
+                <br><br>
+                <button onclick="connect()">Connect as Support Agent</button>
+                <button onclick="disconnect()">Disconnect</button>
+                <span id="connectionStatus" class="status disconnected">Disconnected</span>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="section">
+                <h3>🔔 Notification Settings</h3>
+                <label>
+                    <input type="checkbox" id="soundEnabled" checked> 
+                    Enable notification sound
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="autoJoinConversation" checked> 
+                    Auto-join new conversations
+                </label>
+                <br><br>
+                <div id="notificationStatus">
+                    📢 Listening for new conversation notifications...
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Conversations -->
+        <div class="section">
+            <h3>💬 Active Conversations</h3>
+            <div id="activeConversations" class="conversation-list">
+                <em>No active conversations yet. New conversations will appear here automatically.</em>
+            </div>
+        </div>
+        
+        <!-- Chat Section -->
+        <div class="section">
+            <h3>💬 Chat Interface</h3>
+            <label>Selected Conversation ID:</label>
+            <input type="text" id="conversationId" placeholder="Select a conversation or paste ID">
+            
+            <label>Reply Message:</label>
+            <input type="text" id="messageInput" placeholder="Nhập phản hồi cho khách hàng" onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()">Send Reply</button>
+            <button onclick="joinConversation()">Join Selected Conversation</button>
+        </div>
+        
+        <!-- Messages Display -->
+        <div class="section">
+            <h3>📨 Messages & Notifications</h3>
+            <button onclick="clearMessages()">Clear Messages</button>
+            <div id="messages"></div>
+        </div>
+    </div>
+
+    <!-- Hidden audio for notifications -->
+    <audio id="notificationSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRvIAAABXQVZFZm10IBAAAAABAAEAL..." type="audio/wav">
+        <!-- You can add a real notification sound file here -->
+    </audio>
+
+    <script>
+        let stompClient = null;
+        let activeConversations = new Map();
+        let userRole = 'CUSTOMER_SUPPORT';
+
+        // Auto-load saved data
+        window.onload = function() {
+            const savedToken = localStorage.getItem('supportAgentToken');
+            if (savedToken) {
+                document.getElementById('jwtToken').value = savedToken;
+            }
+        };
+
+        function connect() {
+            const token = document.getElementById('jwtToken').value.trim();
+            if (!token) {
+                alert('Please enter JWT token');
+                return;
+            }
+
+            localStorage.setItem('supportAgentToken', token);
+            userRole = document.getElementById('userRole').value;
+
+            const socket = new SockJS('http://localhost:8080/ws');
+            stompClient = Stomp.over(socket);
+
+            stompClient.debug = function(str) {
+                console.log('STOMP Debug: ' + str);
+            };
+
+            const headers = {
+                'Authorization': 'Bearer ' + token
+            };
+
+            displayMessage('System', `🔄 Connecting as ${userRole}...`);
+
+            stompClient.connect(headers, 
+                function (frame) {
+                    console.log('✅ Connected: ' + frame);
+                    document.getElementById('connectionStatus').textContent = `Connected as ${userRole}`;
+                    document.getElementById('connectionStatus').className = 'status connected';
+                    
+                    displayMessage('System', `✅ Connected as ${userRole}`);
+                    
+                    // 🚀 QUAN TRỌNG: Subscribe vào kênh thông báo chung
+                    subscribeToSupportNotifications();
+                },
+                function (error) {
+                    console.log('❌ Connection error: ' + error);
+                    document.getElementById('connectionStatus').textContent = 'Connection Failed';
+                    document.getElementById('connectionStatus').className = 'status disconnected';
+                    displayMessage('System', `❌ Connection failed: ${error}`);
+                }
+            );
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+                activeConversations.clear();
+                updateActiveConversationsList();
+            }
+            document.getElementById('connectionStatus').textContent = 'Disconnected';
+            document.getElementById('connectionStatus').className = 'status disconnected';
+            displayMessage('System', '🔌 Disconnected');
+        }
+
+        // 🎯 CORE FUNCTION: Lắng nghe thông báo conversation mới
+        function subscribeToSupportNotifications() {
+            if (!stompClient || !stompClient.connected) return;
+
+            const supportTopic = '/topic/support/notifications';
+            
+            stompClient.subscribe(supportTopic, function (message) {
+                try {
+                    const notification = JSON.parse(message.body);
+                    handleNewConversationNotification(notification);
+                } catch (e) {
+                    console.error('Error parsing support notification:', e);
+                }
+            });
+
+            displayMessage('System', `📡 Listening for new conversations on: ${supportTopic}`);
+            console.log('📡 Subscribed to support notifications: ' + supportTopic);
+        }
+
+        // 🔔 Xử lý thông báo conversation mới
+        function handleNewConversationNotification(notification) {
+            console.log('🆕 New conversation notification:', notification);
+            
+            // Phát âm thanh thông báo
+            if (document.getElementById('soundEnabled').checked) {
+                playNotificationSound();
+            }
+
+            // Thêm vào danh sách conversation đang hoạt động
+            activeConversations.set(notification.conversationId, {
+                id: notification.conversationId,
+                customerName: notification.customerName,
+                customerEmail: notification.customerEmail,
+                firstMessage: notification.firstMessage,
+                createdAt: new Date(notification.createdAt),
+                status: notification.status
+            });
+
+            updateActiveConversationsList();
+
+            // Hiển thị thông báo đặc biệt
+            displayNotification('🆕 NEW CONVERSATION', notification);
+
+            // Tự động join conversation nếu được bật
+            if (document.getElementById('autoJoinConversation').checked) {
+                setTimeout(() => {
+                    joinSpecificConversation(notification.conversationId);
+                }, 1000);
+            }
+        }
+
+        function updateActiveConversationsList() {
+            const container = document.getElementById('activeConversations');
+            
+            if (activeConversations.size === 0) {
+                container.innerHTML = '<em>No active conversations yet. New conversations will appear here automatically.</em>';
+                return;
+            }
+
+            let html = '';
+            activeConversations.forEach((conv, id) => {
+                html += `
+                    <div style="padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 3px; cursor: pointer;" 
+                         onclick="selectConversation('${id}')">
+                        <strong>${conv.customerName}</strong> (${conv.customerEmail})<br>
+                        <small>💬 "${conv.firstMessage.substring(0, 50)}${conv.firstMessage.length > 50 ? '...' : ''}"</small><br>
+                        <small>🕒 ${conv.createdAt.toLocaleString()}</small>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function selectConversation(conversationId) {
+            document.getElementById('conversationId').value = conversationId;
+            joinConversation();
+        }
+
+        function joinConversation() {
+            const conversationId = document.getElementById('conversationId').value.trim();
+            if (!conversationId) {
+                alert('Please select or enter a conversation ID');
+                return;
+            }
+            joinSpecificConversation(conversationId);
+        }
+
+        function joinSpecificConversation(conversationId) {
+            if (!stompClient || !stompClient.connected) return;
+
+            const conversationTopic = '/topic/conversations/' + conversationId;
+            
+            stompClient.subscribe(conversationTopic, function (message) {
+                try {
+                    const messageData = JSON.parse(message.body);
+                    displayMessage('Customer Message', messageData, 'received');
+                } catch (e) {
+                    console.error('Error parsing conversation message:', e);
+                }
+            });
+
+            displayMessage('System', `📱 Joined conversation: ${conversationId}`);
+        }
+
+        function sendMessage() {
+            const conversationId = document.getElementById('conversationId').value.trim();
+            const messageText = document.getElementById('messageInput').value.trim();
+            
+            if (!conversationId || !messageText) {
+                alert('Please enter conversation ID and message');
+                return;
+            }
+
+            if (stompClient && stompClient.connected) {
+                const messageRequest = {
+                    content: messageText,
+                    messageType: 'TEXT'
+                };
+
+                try {
+                    stompClient.send('/app/chat.send/' + conversationId, {}, JSON.stringify(messageRequest));
+                    
+                    displayMessage('Reply Sent', { 
+                        content: messageText, 
+                        conversationId: conversationId,
+                        sender: userRole
+                    }, 'sent');
+                    
+                    document.getElementById('messageInput').value = '';
+                } catch (error) {
+                    displayMessage('Error', { content: 'Failed to send message: ' + error.message });
+                }
+            } else {
+                alert('Not connected to WebSocket');
+            }
+        }
+
+        function displayMessage(type, message, messageType = 'normal') {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            
+            let className = 'message-sent';
+            let icon = '📤';
+            
+            if (type === 'Customer Message') {
+                className = 'message-received';
+                icon = '👤';
+            } else if (type === 'System') {
+                className = 'message-system';
+                icon = '⚙️';
+            } else if (type === 'Error') {
+                className = 'message-error';
+                icon = '❌';
+            }
+            
+            messageElement.className = className;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const content = message.content || JSON.stringify(message);
+            
+            messageElement.innerHTML = `
+                <strong>${icon} [${timestamp}] ${type}:</strong> 
+                ${content}
+            `;
+            
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function displayNotification(title, notification) {
+            const messagesDiv = document.getElementById('messages');
+            const notificationElement = document.createElement('div');
+            notificationElement.className = 'notification-new';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            
+            notificationElement.innerHTML = `
+                <div class="notification-sound">🔔 [${timestamp}] ${title}</div>
+                <strong>Customer:</strong> ${notification.customerName} (${notification.customerEmail})<br>
+                <strong>First Message:</strong> "${notification.firstMessage}"<br>
+                <strong>Conversation ID:</strong> <code>${notification.conversationId}</code><br>
+                <button onclick="selectConversation('${notification.conversationId}')" 
+                        style="margin-top: 8px; background-color: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+                    📱 Join Conversation
+                </button>
+            `;
+            
+            messagesDiv.appendChild(notificationElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function playNotificationSound() {
+            // Tạo âm thanh beep đơn giản
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>
