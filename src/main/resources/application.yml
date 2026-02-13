@@ -1,7 +1,7 @@
 # Spring Boot Application Configuration
 
 server:
-  port: 8080
+  port: ${PORT:8080}  # ← Koyeb sẽ set PORT, local fallback 8080
   # 🔥 QUAN TRỌNG: Lắng nghe trên tất cả network interfaces (0.0.0.0)
   # Điều này cho phép Android Emulator (10.0.2.2) và thiết bị vật lý kết nối được
   address: 0.0.0.0
