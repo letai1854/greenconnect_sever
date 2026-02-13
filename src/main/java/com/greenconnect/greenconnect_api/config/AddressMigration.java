@@ -9,9 +9,12 @@ import org.springframework.stereotype.Component;
 /**
  * Database migration component to drop old address columns on startup.
  * This ensures compatibility with the new Vietnam address standard.
+ * 
+ * ⚠️ DISABLED FOR CLOUD DEPLOYMENT - Migration already completed
+ * Uncomment @Component if you need to run migration again
  */
 @Slf4j
-@Component
+// @Component  // ⚠️ COMMENTED OUT - Migration đã chạy xong, tắt để app start nhanh hơn
 @RequiredArgsConstructor
 public class AddressMigration {
     
