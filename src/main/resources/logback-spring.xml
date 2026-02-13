@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     
-    <!-- Define log file location -->
-    <property name="LOG_HOME" value="logs" />
-    <property name="APP_NAME" value="greenconnect-api" />
-    
-    <!-- Console appender with colored output -->
+    <!-- Console appender with colored output (cloud-friendly) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
@@ -14,95 +10,60 @@
         </encoder>
     </appender>
     
-    <!-- Application log file appender -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_HOME}/${APP_NAME}.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n
-            </pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/${APP_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>50MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>1GB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
-    
-    <!-- Async appender for better performance -->
-    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="FILE"/>
-        <queueSize>512</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-    </appender>
-    
     <!-- Logger configurations -->
     
     <!-- Application logger -->
     <logger name="com.greenconnect.greenconnect_api" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- Database SQL logging -->
     <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- Database parameter binding -->
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
-        <appender-ref ref="ASYNC_FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
     
     <!-- Spring Security -->
     <logger name="org.springframework.security" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- Spring WebSocket -->
     <logger name="org.springframework.web.socket" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- Spring Messaging -->
     <logger name="org.springframework.messaging" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- Configuration and startup info -->
     <logger name="org.springframework.boot" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- Hibernate warnings -->
     <logger name="org.hibernate.dialect.Dialect" level="WARN" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <logger name="org.hibernate.orm.deprecation" level="WARN" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- JPA Configuration -->
     <logger name="org.springframework.boot.autoconfigure.orm.jpa" level="WARN" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </logger>
     
     <!-- Root logger -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC_FILE"/>
     </root>
     
 </configuration>
